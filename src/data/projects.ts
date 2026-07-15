@@ -1,0 +1,75 @@
+export interface Project {
+  id:            string;
+  title:         string;
+  client:        string;
+  category:      string;
+  roles:         string;
+  videoFileName: string;
+  isVertical?:   boolean;
+  volume?:       number;
+}
+
+export const R2_BASE_URL = 'https://pub-9128f76c1a114c7c8a7d523ada635e8c.r2.dev';
+
+/** Projets affichés dans la grille /demos */
+export const projects: Project[] = [
+  {
+    id:            '1',
+    title:         "C PAS SI LOIN — L'ASCENSION DE LA SOUFRIÈRE",
+    client:        'France Télévisions / C Pas Si Loin',
+    category:      'MAGAZINE TV',
+    roles:         'Mixage & Sound Design',
+    videoFileName: 'GUADELOUPE_ASCENSION_DE_LA_SOUFFRIERE.mp4',
+  },
+  {
+    id:            '2',
+    title:         'C PAS SI LOIN — KAYAK RIVIÈRE MOUSTIQUE',
+    client:        'France Télévisions / C Pas Si Loin',
+    category:      'MAGAZINE TV',
+    roles:         'Mixage & Sound Design',
+    videoFileName: 'GUADELOUPE_KAYAK_RIVIERE_MOUSTIQUE.mp4',
+  },
+  {
+    id:            '3',
+    title:         'C PAS SI LOIN — GUYANE PETIT SAUT',
+    client:        'France Télévisions / C Pas Si Loin',
+    category:      'MAGAZINE TV',
+    roles:         'Mixage & Sound Design',
+    videoFileName: 'GUYANE PETIT SAUT.mp4',
+  },
+  {
+    id:            '4',
+    title:         'OUTREMER.LE MAG — EM004 (TRAILER)',
+    client:        'France Télévisions / Outremer.Le Mag',
+    category:      'MAGAZINE TV',
+    roles:         'Mixage Audio & Post-Production',
+    videoFileName: 'OMMAGS04_SOM-C_EM004.mp4',
+  },
+  {
+    id:            '5',
+    title:         'FRANCE TV — ANIMATION TARTE TATIN',
+    client:        'France Télévisions',
+    category:      'FILM & DOCUMENTAIRE',
+    roles:         'Sound Design & Motion Design',
+    videoFileName: 'ANIMATION TARTE TATIN.MP4',
+  },
+  {
+    id:            '6',
+    title:         'AUDI — 1 MILLIMÈTRE (RE-BRUITAGE)',
+    client:        'Audi (Unofficial Shorts)',
+    category:      'COMMERCIAL',
+    roles:         'Sound Design & Re-Bruitage Intégral',
+    videoFileName: 'AUDI_1_millim\u00e8tre.mov',
+  },
+  {
+    id:            '7',
+    title:         'ELIS — CHRONO (FILM PROMOTIONNEL)',
+    client:        'Elis',
+    category:      'COMMERCIAL',
+    roles:         'Mixage & Post-Production Audio',
+    videoFileName: 'elis-chrono.mp4',
+  },
+];
+
+export const getProjectVideoUrl = (fileName: string): string =>
+  `${R2_BASE_URL}/${encodeURIComponent(fileName)}`;

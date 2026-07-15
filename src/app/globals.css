@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+/* Masquer le badge DevTools Next.js (logo "N" en bas à gauche) */
+nextjs-portal {
+  display: none !important;
+}
+
+@theme inline {
+  /* ── Fond OLED ── */
+  --color-background: #050505;
+  --color-surface:    #0c0c12;
+  --color-surface-2:  #13131c;
+
+  /* ── Typographie ── */
+  --color-foreground: #f8fafc;   /* slate-50 : blanc cassé, non agressif */
+  --color-muted:      #94a3b8;   /* slate-400 */
+  --color-subtle:     #475569;   /* slate-600 */
+
+  /* ── Amethyst (accentuation principale) ── */
+  --color-amethyst:       #a855f7;   /* violet-500 */
+  --color-amethyst-light: #c084fc;   /* violet-400 */
+  --color-amethyst-dim:   #7c3aed;   /* violet-600 */
+  --color-amethyst-ghost: rgba(168, 85, 247, 0.08);
+
+  /* ── Gardé pour rétro-compat PersistentPlayer / Navbar ── */
+  --color-cyan:     #00f5ff;
+  --color-cyan-dim: #00b4d8;
+
+  /* ── Typographie ── */
+  --font-sans: var(--font-space);
+  --font-mono: var(--font-geist-mono);
+}
+
+/* ── Keyframes ── */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ── Body OLED noir absolu ── */
+body {
+  position: relative;
+  background-color: #050505;
+  color: #f8fafc;
+  font-family: var(--font-sans), 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Dégradé radial améthyste → noir (couche 1) ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 80% 50% at 50% -5%,
+      rgba(168, 85, 247, 0.07) 0%,
+      rgba(124, 58, 237, 0.04) 30%,
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 85% 95%,
+      rgba(124, 58, 237, 0.04) 0%,
+      transparent 60%
+    );
+}
+
+/* ── Grain photographique argenté (couche 2) ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.038;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 160px 160px;
+  mix-blend-mode: screen;
+}
+
+/* ── Contenu au-dessus des couches de fond ── */
+body > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ── Classe utilitaire .bg-noise (réutilisable sur n'importe quel élément) ── */
+.bg-noise {
+  position: relative;
+  isolation: isolate;
+}
+.bg-noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  mix-blend-mode: overlay;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #050505; }
+::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.4);
+  border-radius: 2px;
+}
+
+/* ── Sélection ── */
+::selection {
+  background: rgba(168, 85, 247, 0.25);
+  color: #c084fc;
+}
