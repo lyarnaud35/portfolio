@@ -79,6 +79,15 @@ export default function HoverShowcase() {
     setIsMuted((prev) => !prev);
   }, []);
 
+  const handleVideoTimeUpdate = useCallback(
+    (e: React.SyntheticEvent<HTMLVideoElement>, endAt?: number) => {
+      if (!endAt) return;
+      const video = e.currentTarget;
+      if (video.currentTime >= endAt) video.currentTime = 0;
+    },
+    [],
+  );
+
   /* ── Hover debouncé 180 ms + fade-to-black avant tout changement ── */
   const handleMouseEnter = useCallback((project: ShowcaseProject) => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
@@ -212,6 +221,7 @@ export default function HoverShowcase() {
                             muted={isMuted}
                             loop
                             playsInline
+                            onTimeUpdate={(e) => handleVideoTimeUpdate(e, project.endAt)}
                             className="absolute inset-0 h-full w-full object-cover"
                           />
                           {/* Bouton son mobile */}
@@ -268,6 +278,7 @@ export default function HoverShowcase() {
                   loop
                   muted
                   playsInline
+                  onTimeUpdate={(e) => handleVideoTimeUpdate(e, activeProject.endAt)}
                   className={`absolute inset-0 w-full h-full object-cover blur-3xl pointer-events-none scale-110 transition-all duration-700 ${
                     isVertical ? 'opacity-40' : 'opacity-0'
                   }`}
@@ -279,6 +290,7 @@ export default function HoverShowcase() {
                   loop
                   playsInline
                   onLoadedData={() => setIsFading(false)}
+                  onTimeUpdate={(e) => handleVideoTimeUpdate(e, activeProject.endAt)}
                   className={`relative z-10 w-full h-full transition-all duration-300 ${
                     isVertical ? 'object-contain' : 'object-cover'
                   }`}

@@ -6,7 +6,9 @@ import { useEffect, useRef, useState } from 'react';
 export default function HomePage() {
   const [step, setStep] = useState<'button' | 'video' | 'fading' | 'hidden'>('button');
   const [isCheckingMemory, setIsCheckingMemory] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const desktopVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef  = useRef<HTMLVideoElement>(null);
+  const videoOpacity    = step === 'button' ? 'opacity-0' : 'opacity-100';
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -19,9 +21,17 @@ export default function HomePage() {
 
   const startStudio = () => {
     setStep('video');
-    if (videoRef.current) {
-      videoRef.current.play().catch(err => console.error('Autoplay issue:', err));
-    }
+
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    const desktop = desktopVideoRef.current;
+    const mobile  = mobileVideoRef.current;
+
+    // Déblocage audio via le clic utilisateur (requis sur mobile)
+    if (desktop) desktop.muted = false;
+    if (mobile)  mobile.muted  = false;
+
+    const video = isDesktop ? desktop : mobile;
+    video?.play().catch(err => console.error('Autoplay issue:', err));
   };
 
   const endIntro = () => {
@@ -72,16 +82,28 @@ export default function HomePage() {
             </div>
           )}
 
-          {/* Vidéo */}
+          {/* Intro desktop — horizontal */}
           <video
-            ref={videoRef}
+            ref={desktopVideoRef}
             src="/splash-intro.mp4"
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-              step === 'button' ? 'opacity-0' : 'opacity-100'
-            }`}
-            onEnded={endIntro}
+            muted={step === 'button'}
             playsInline
+            className={`hidden md:block absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoOpacity}`}
+            onEnded={endIntro}
           />
+
+          {/* Intro mobile — vertical */}
+          <video
+            ref={mobileVideoRef}
+            src="/splash-intro-mobile.mp4"
+            muted={step === 'button'}
+            playsInline
+            className={`block md:hidden absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${videoOpacity}`}
+            onEnded={endIntro}
+          />
+
+          {/* Voile mobile uniquement */}
+          <div className="absolute inset-0 block md:hidden bg-black/40 pointer-events-none" />
         </div>
       )}
     </main>

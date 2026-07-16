@@ -7,6 +7,7 @@ export interface ShowcaseProject {
   videoFileName: string;
   isVertical?:   boolean;
   volume?:       number; // 1.0 = Max, 0.71 ≈ −3 dB
+  endAt?:        number; // reboucle avant cette seconde (évite la fin indésirable)
 }
 
 export const R2_BASE_URL = 'https://pub-9128f76c1a114c7c8a7d523ada635e8c.r2.dev';
@@ -63,6 +64,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     category:      'DOCUMENTAIRE',
     roles:         'MIXAGE & SOUND DESIGN',
     videoFileName: 'outremerstory.mp4',
+    endAt:         30,
   },
   {
     id:            'outremer-le-mag',
