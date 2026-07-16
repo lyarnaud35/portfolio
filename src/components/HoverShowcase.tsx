@@ -45,16 +45,11 @@ function MobileProjectVideo({
     <video
       ref={videoRef}
       preload="none"
-      poster={
-        project.posterFileName
-          ? getPosterUrl(project.posterFileName)
-          : undefined
-      }
       loop
       playsInline
       muted={isMuted}
       onTimeUpdate={(e) => onTimeUpdate(e, project.endAt)}
-      className="absolute inset-0 h-full w-full object-cover"
+      className="absolute inset-0 h-full w-full object-cover bg-black"
     />
   );
 }
@@ -66,7 +61,7 @@ export default function HoverShowcase() {
   const [contactOpen,   setContactOpen]   = useState(false);
   const [isMobile,      setIsMobile]      = useState(false);
   const [hasMounted,    setHasMounted]    = useState(false);
-  const [hasInteracted, setHasInteracted] = useState(false); // rien ne charge avant hover/clic
+  const [hasInteracted, setHasInteracted] = useState(true); // 1er projet actif + vidéo dès l'ouverture
 
   const fadeTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -83,7 +78,7 @@ export default function HoverShowcase() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  /* Hook 1 — Charge/lit UNIQUEMENT après interaction (hover ou clic) */
+  /* Hook 1 — Charge/lit le projet actif (1er projet dès le montage, puis au hover/clic) */
   useEffect(() => {
     if (!hasMounted || isMobile || !hasInteracted) return;
 

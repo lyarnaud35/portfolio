@@ -99,7 +99,7 @@ body::after {
 }
 
 /* ── Contenu au-dessus des couches de fond ── */
-body > * {
+body > *:not([data-site-credit]) {
   position: relative;
   z-index: 2;
 }
