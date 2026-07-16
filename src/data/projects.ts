@@ -56,7 +56,7 @@ export const projects: Project[] = [
     client:        'France Télévisions',
     category:      'FILM & DOCUMENTAIRE',
     roles:         'Sound Design & Motion Design',
-    videoFileName: 'ANIMATION TARTE TATIN.MP4',
+    videoFileName: 'ANIMATION TARTE TATIN.mp4',
     posterFileName: 'tarte-tatin.jpg',
   },
   {
@@ -65,7 +65,7 @@ export const projects: Project[] = [
     client:        'Audi (Unofficial Shorts)',
     category:      'COMMERCIAL',
     roles:         'Sound Design & Re-Bruitage Intégral',
-    videoFileName: 'AUDI_1_millim\u00e8tre.mov',
+    videoFileName: 'AUDI_1_millimètre.mp4',
     posterFileName: 'audi.jpg',
   },
   {
