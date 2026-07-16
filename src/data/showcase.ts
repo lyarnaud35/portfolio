@@ -5,6 +5,7 @@ export interface ShowcaseProject {
   category:      string;
   roles:         string;
   videoFileName: string;
+  posterFileName?: string; // miniature locale dans /public/image
   isVertical?:   boolean;
   volume?:       number; // 1.0 = Max, 0.71 ≈ −3 dB
   endAt?:        number; // reboucle avant cette seconde (évite la fin indésirable)
@@ -20,6 +21,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     category:      'MAGAZINE',
     roles:         'MIXAGE, SOUND DESIGN & ENREGISTREMENT',
     videoFileName: 'C pas si loin.mp4',
+    posterFileName: 'c-pas-si-loin-v2.jpg',
   },
   {
     id:            'c-succulent',
@@ -28,6 +30,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     category:      'EMISSION CULINAIRE',
     roles:         'ENREGISTREMENT DES COMÉDIENS',
     videoFileName: 'Csucc.mp4',
+    posterFileName: 'C-est-Succulent-!.jpg',
   },
   {
     id:            'ici-matin',
@@ -36,6 +39,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     category:      'MATINALE',
     roles:         'MIXAGE AUDIO',
     videoFileName: 'ICIMATIN.mp4',
+    posterFileName: 'ici-matin.jpg',
   },
   {
     id:            'comedy-queer',
@@ -44,6 +48,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     category:      'DIVERTISSEMENT',
     roles:         'ENREGISTREMENT DES COMÉDIENS',
     videoFileName: 'Comedy-queer.mp4',
+    posterFileName: 'comedy-queer.jpg',
     isVertical:    true,
     volume:        0.71,
   },
@@ -54,6 +59,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     category:      'DIVERTISSEMENT',
     roles:         'MIXAGE & SOUND DESIGN',
     videoFileName: 'chefpays.mp4',
+    posterFileName: 'chef-pays.jpg',
     isVertical:    true,
     volume:        0.71,
   },
@@ -64,6 +70,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     category:      'DOCUMENTAIRE',
     roles:         'MIXAGE & SOUND DESIGN',
     videoFileName: 'outremerstory.mp4',
+    posterFileName: 'outremer-story.jpg',
     endAt:         30,
   },
   {
@@ -73,6 +80,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     category:      'EMISSION QUOTIDIENNE',
     roles:         'MIXAGE & SOUND DESIGN',
     videoFileName: 'OMMAGS04_SOM-C_EM004.mp4',
+    posterFileName: 'outremer-le-mag.jpg',
   },
   {
     id:            'brame-du-cerf',
@@ -81,6 +89,7 @@ export const showcaseProjects: ShowcaseProject[] = [
     category:      'SLOW TV / NATURE / PODCAST',
     roles:         'SOUND DESIGN COMPLET & MIXAGE',
     videoFileName: 'Brame-du-cerf.mp4',
+    posterFileName: 'brame-du-cerf.jpg',
     isVertical:    true,
     volume:        0.71,
   },
@@ -88,3 +97,7 @@ export const showcaseProjects: ShowcaseProject[] = [
 
 export const getVideoUrl = (fileName: string): string =>
   `${R2_BASE_URL}/${encodeURIComponent(fileName)}`;
+
+/** Miniatures locales : /public/image/... */
+export const getPosterUrl = (fileName: string): string =>
+  `/image/${encodeURIComponent(fileName)}`;

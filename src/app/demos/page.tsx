@@ -3,8 +3,75 @@
 import ContactModal from '@/components/ui/ContactModal';
 import NavBar from '@/components/ui/NavBar';
 import VideoModal from '@/components/ui/VideoModal';
-import { getProjectVideoUrl, projects } from '@/data/projects';
-import { useState } from 'react';
+import {
+  getProjectPosterUrl,
+  getProjectVideoUrl,
+  Project,
+  projects,
+} from '@/data/projects';
+import { useCallback, useRef, useState } from 'react';
+
+function ProjectThumb({ project }: { project: Project }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isActive, setIsActive] = useState(false);
+  const hasLoadedRef = useRef(false);
+
+  const startPreview = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (!hasLoadedRef.current) {
+      video.src = getProjectVideoUrl(project.videoFileName);
+      video.load();
+      hasLoadedRef.current = true;
+    }
+
+    setIsActive(true);
+    video.muted = true;
+    video.play().catch(() => {});
+  }, [project.videoFileName]);
+
+  const stopPreview = useCallback(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.pause();
+    setIsActive(false);
+  }, []);
+
+  return (
+    <div
+      className="relative aspect-video overflow-hidden rounded-lg border border-white/10 bg-[#0d0d0d] transition-all duration-300 group-hover:border-[#a855f7] group-hover:shadow-[0_0_30px_rgba(168,85,247,0.4)]"
+      onMouseEnter={startPreview}
+      onMouseLeave={stopPreview}
+    >
+      <video
+        ref={videoRef}
+        preload="none"
+        muted
+        loop
+        playsInline
+        poster={
+          project.posterFileName
+            ? getProjectPosterUrl(project.posterFileName)
+            : undefined
+        }
+        className={`w-full h-full object-cover transition-opacity duration-300 ${
+          isActive ? 'opacity-100' : 'opacity-90'
+        }`}
+      />
+      {/* Overlay sombre */}
+      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-300" />
+      {/* Bouton Play */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="w-14 h-14 rounded-full border-2 border-white/80 flex items-center justify-center backdrop-blur-sm bg-black/20">
+          <svg className="w-5 h-5 text-white translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function DemosPage() {
   const [contactOpen,   setContactOpen]   = useState(false);
@@ -57,28 +124,7 @@ export default function DemosPage() {
                 className="group flex flex-col cursor-pointer"
                 onClick={() => openVideo(index)}
               >
-                {/* Miniature vidéo en lecture silencieuse */}
-                <div className="relative aspect-video overflow-hidden rounded-lg border border-white/10 bg-[#0d0d0d] transition-all duration-300 group-hover:border-[#a855f7] group-hover:shadow-[0_0_30px_rgba(168,85,247,0.4)]">
-                  <video
-                    src={getProjectVideoUrl(project.videoFileName)}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    className="w-full h-full object-cover"
-                  />
-                  {/* Overlay sombre */}
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-300" />
-                  {/* Bouton Play */}
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="w-14 h-14 rounded-full border-2 border-white/80 flex items-center justify-center backdrop-blur-sm bg-black/20">
-                      <svg className="w-5 h-5 text-white translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
+                <ProjectThumb project={project} />
 
                 {/* Métadonnées */}
                 <div className="mt-2">

@@ -5,6 +5,7 @@ export interface Project {
   category:      string;
   roles:         string;
   videoFileName: string;
+  posterFileName?: string; // miniature locale dans /public/image
   isVertical?:   boolean;
   volume?:       number;
 }
@@ -20,6 +21,7 @@ export const projects: Project[] = [
     category:      'MAGAZINE TV',
     roles:         'Mixage & Sound Design',
     videoFileName: 'GUADELOUPE_ASCENSION_DE_LA_SOUFFRIERE.mp4',
+    posterFileName: 'soufriere.jpg',
   },
   {
     id:            '2',
@@ -28,6 +30,7 @@ export const projects: Project[] = [
     category:      'MAGAZINE TV',
     roles:         'Mixage & Sound Design',
     videoFileName: 'GUADELOUPE_KAYAK_RIVIERE_MOUSTIQUE.mp4',
+    posterFileName: 'kayak.jpg',
   },
   {
     id:            '3',
@@ -36,6 +39,7 @@ export const projects: Project[] = [
     category:      'MAGAZINE TV',
     roles:         'Mixage & Sound Design',
     videoFileName: 'GUYANE PETIT SAUT.mp4',
+    posterFileName: 'petit-saut.jpg',
   },
   {
     id:            '4',
@@ -44,6 +48,7 @@ export const projects: Project[] = [
     category:      'MAGAZINE TV',
     roles:         'Mixage Audio & Post-Production',
     videoFileName: 'OMMAGS04_SOM-C_EM004.mp4',
+    posterFileName: 'outremer-mag.jpg',
   },
   {
     id:            '5',
@@ -52,6 +57,7 @@ export const projects: Project[] = [
     category:      'FILM & DOCUMENTAIRE',
     roles:         'Sound Design & Motion Design',
     videoFileName: 'ANIMATION TARTE TATIN.MP4',
+    posterFileName: 'tarte-tatin.jpg',
   },
   {
     id:            '6',
@@ -60,6 +66,7 @@ export const projects: Project[] = [
     category:      'COMMERCIAL',
     roles:         'Sound Design & Re-Bruitage Intégral',
     videoFileName: 'AUDI_1_millim\u00e8tre.mov',
+    posterFileName: 'audi.jpg',
   },
   {
     id:            '7',
@@ -68,8 +75,13 @@ export const projects: Project[] = [
     category:      'COMMERCIAL',
     roles:         'Mixage & Post-Production Audio',
     videoFileName: 'elis-chrono.mp4',
+    posterFileName: 'elis.png',
   },
 ];
 
 export const getProjectVideoUrl = (fileName: string): string =>
   `${R2_BASE_URL}/${encodeURIComponent(fileName)}`;
+
+/** Miniatures locales : /public/image/... */
+export const getProjectPosterUrl = (fileName: string): string =>
+  `/image/${encodeURIComponent(fileName)}`;

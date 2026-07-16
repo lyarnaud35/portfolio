@@ -1,11 +1,63 @@
 'use client';
 
-import { ShowcaseProject, getVideoUrl, showcaseProjects } from '@/data/showcase';
+import { ShowcaseProject, getPosterUrl, getVideoUrl, showcaseProjects } from '@/data/showcase';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ContactModal from './ui/ContactModal';
 import NavBar from './ui/NavBar';
+
+/** Lecteur mobile : load + play uniquement au montage (après clic projet) */
+function MobileProjectVideo({
+  project,
+  isMuted,
+  onTimeUpdate,
+}: {
+  project: ShowcaseProject;
+  isMuted: boolean;
+  onTimeUpdate: (e: React.SyntheticEvent<HTMLVideoElement>, endAt?: number) => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    video.muted = isMuted;
+    video.volume = project.volume ?? 1.0;
+    video.src = getVideoUrl(project.videoFileName);
+    video.load();
+    video.play().catch(() => {});
+
+    return () => {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project.id, project.videoFileName]);
+
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.muted = isMuted;
+  }, [isMuted]);
+
+  return (
+    <video
+      ref={videoRef}
+      preload="none"
+      poster={
+        project.posterFileName
+          ? getPosterUrl(project.posterFileName)
+          : undefined
+      }
+      loop
+      playsInline
+      muted={isMuted}
+      onTimeUpdate={(e) => onTimeUpdate(e, project.endAt)}
+      className="absolute inset-0 h-full w-full object-cover"
+    />
+  );
+}
 
 export default function HoverShowcase() {
   const [activeProject, setActiveProject] = useState<ShowcaseProject>(showcaseProjects[0]);
@@ -14,6 +66,7 @@ export default function HoverShowcase() {
   const [contactOpen,   setContactOpen]   = useState(false);
   const [isMobile,      setIsMobile]      = useState(false);
   const [hasMounted,    setHasMounted]    = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false); // rien ne charge avant hover/clic
 
   const fadeTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -30,9 +83,9 @@ export default function HoverShowcase() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  /* Hook 1 — Changement de source (desktop, élément stable, SANS remount) */
+  /* Hook 1 — Charge/lit UNIQUEMENT après interaction (hover ou clic) */
   useEffect(() => {
-    if (!hasMounted || isMobile) return;
+    if (!hasMounted || isMobile || !hasInteracted) return;
 
     const video = mainVideoRef.current;
     if (!video || !activeProject) return;
@@ -40,6 +93,7 @@ export default function HoverShowcase() {
     video.pause();
     video.muted = isMuted;
     video.volume = activeProject.volume ?? 1.0;
+    video.preload = 'auto';
     video.src = getVideoUrl(activeProject.videoFileName);
     video.load();
 
@@ -54,19 +108,18 @@ export default function HoverShowcase() {
     if (bg) {
       bg.pause();
       bg.muted = true;
+      bg.preload = 'auto';
       bg.src = getVideoUrl(activeProject.videoFileName);
       bg.load();
       bg.play().catch(() => {});
     }
 
-    /* Au prochain changement : couper net avant la nouvelle source */
     return () => {
       video.pause();
       if (bgVideoRef.current) bgVideoRef.current.pause();
     };
-  // isMuted lu une fois au changement de projet — le Hook 2 gère les clics mute
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeProject, hasMounted, isMobile]);
+  }, [activeProject, hasMounted, isMobile, hasInteracted]);
 
   /* Hook 2 — Mute uniquement (pas de reload) */
   useEffect(() => {
@@ -92,14 +145,11 @@ export default function HoverShowcase() {
   const handleMouseEnter = useCallback((project: ShowcaseProject) => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
     hoverTimer.current = setTimeout(() => {
+      setHasInteracted(true);
       if (project.id === activeProject.id) return;
       if (fadeTimer.current) clearTimeout(fadeTimer.current);
 
-      // 1. Fondu au noir immédiat (300 ms)
       setIsFading(true);
-
-      // 2. Après que le noir est complet : changer projet ET source ensemble
-      //    → isVertical, ambilight et src changent dans l'obscurité
       fadeTimer.current = setTimeout(() => {
         setActiveProject(project);
       }, 300);
@@ -113,6 +163,7 @@ export default function HoverShowcase() {
 
   /* Tap mobile : sélection immédiate (pas de hover) */
   const handleProjectSelect = useCallback((project: ShowcaseProject) => {
+    setHasInteracted(true);
     if (project.id === activeProject.id) return;
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
     if (fadeTimer.current) clearTimeout(fadeTimer.current);
@@ -123,6 +174,9 @@ export default function HoverShowcase() {
   }, [activeProject.id]);
 
   const isVertical = activeProject.isVertical ?? false;
+  const activePoster = activeProject.posterFileName
+    ? getPosterUrl(activeProject.posterFileName)
+    : undefined;
 
   return (
     <div className="relative min-h-screen w-full overflow-y-auto bg-[#050505] text-white lg:h-screen lg:overflow-hidden">
@@ -194,8 +248,8 @@ export default function HoverShowcase() {
                       {project.title}
                     </span>
 
-                    {/* Lecteur accordéon — UNIQUEMENT si mobile + projet actif */}
-                    {hasMounted && isActive && isMobile && (
+                    {/* Lecteur accordéon — mobile + projet actif + après clic */}
+                    {hasMounted && isActive && isMobile && hasInteracted && (
                       <div className="mt-3 flex flex-col gap-3">
                         {/* Métadonnées */}
                         <div className="flex flex-col gap-0.5">
@@ -214,15 +268,10 @@ export default function HoverShowcase() {
                               : 'aspect-video'
                           }`}
                         >
-                          <video
-                            key={project.id}
-                            src={getVideoUrl(project.videoFileName)}
-                            autoPlay
-                            muted={isMuted}
-                            loop
-                            playsInline
-                            onTimeUpdate={(e) => handleVideoTimeUpdate(e, project.endAt)}
-                            className="absolute inset-0 h-full w-full object-cover"
+                          <MobileProjectVideo
+                            project={project}
+                            isMuted={isMuted}
+                            onTimeUpdate={handleVideoTimeUpdate}
                           />
                           {/* Bouton son mobile */}
                           <button
@@ -272,23 +321,27 @@ export default function HoverShowcase() {
                 }`}
                 style={{ aspectRatio: '16/9' }}
               >
-                {/* Fond ambilight — stable, piloté par useEffect */}
+                {/* Fond ambilight — stable, piloté par useEffect (src uniquement après interaction) */}
                 <video
                   ref={bgVideoRef}
+                  preload="none"
                   loop
                   muted
                   playsInline
+                  poster={activePoster}
                   onTimeUpdate={(e) => handleVideoTimeUpdate(e, activeProject.endAt)}
                   className={`absolute inset-0 w-full h-full object-cover blur-3xl pointer-events-none scale-110 transition-all duration-700 ${
                     isVertical ? 'opacity-40' : 'opacity-0'
                   }`}
                 />
 
-                {/* Lecteur principal — stable, SANS key/src/autoPlay/muted (piloté en JS) */}
+                {/* Lecteur principal — stable, SANS src jusqu'au premier hover */}
                 <video
                   ref={mainVideoRef}
+                  preload="none"
                   loop
                   playsInline
+                  poster={activePoster}
                   onLoadedData={() => setIsFading(false)}
                   onTimeUpdate={(e) => handleVideoTimeUpdate(e, activeProject.endAt)}
                   className={`relative z-10 w-full h-full transition-all duration-300 ${
