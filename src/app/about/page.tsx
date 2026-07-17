@@ -31,7 +31,7 @@ export default function AboutPage() {
               fontSize: 'clamp(3rem, 5vw, 4.5rem)',
             }}
           >
-            ARNAUD LY
+            ARNAUD<span className="ml-3 md:ml-5">LY</span>
           </h1>
 
           <p className="text-sm uppercase tracking-widest text-[#a855f7] mb-6">
@@ -69,13 +69,13 @@ export default function AboutPage() {
         </div>
 
         {/* ── Colonne droite : photo ── */}
-        <div className="self-center w-full md:w-1/2 relative h-[65vh] min-h-[500px] max-h-[650px] rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_60px_-15px_rgba(168,85,247,0.15)] grayscale hover:grayscale-0 transition-all duration-700">
+        <div className="relative h-[400px] w-full self-center overflow-hidden rounded-2xl border border-white/10 shadow-[0_0_60px_-15px_rgba(168,85,247,0.15)] grayscale transition-all duration-700 hover:grayscale-0 md:h-[65vh] md:min-h-[500px] md:max-h-[650px] md:w-1/2">
           <Image
             alt="Portrait Arnaud Ly"
-            className="object-cover object-[80%_center] hover:scale-105 transition-transform duration-700"
+            className="object-cover object-[85%_center] transition-transform duration-700 hover:scale-105 md:object-[80%_center]"
             fill
             priority
-            sizes="50vw"
+            sizes="(max-width: 768px) 100vw, 50vw"
             src="/image/photo perso.jpg"
           />
         </div>
